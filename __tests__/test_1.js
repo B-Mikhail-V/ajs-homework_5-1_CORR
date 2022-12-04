@@ -13,44 +13,41 @@ test('class Character', () => {
     type: 'Bowman',
     level: 1,
     health: 100,
-    attack: 25,
-    defence: 25,
   };
-  expect(new Character('persona1', 'Bowman', 100, 1, 25, 25)).toEqual(result);
+  expect(new Character('persona1', 'Bowman')).toEqual(result);
 });
 
 test('validate wrong type', () => {
-  const _ = new Character('persona1', 'Bowman1', 1, 100, 25, 25);
-  expect(() => (_.validate())).toThrow('Указан несуществующий тип - Bowman1');
+  expect(() => (new Character('persona1', 'Bowman1'))).toThrow('Ошибка в типе!');
 });
 
-test('validate too long name', () => {
-  const _ = new Character('persona100000', 'Bowman', 1, 100, 25, 25);
-  expect(() => (_.validate())).toThrow('Длина имени должна быть от 2 до 10 символов');
-});
-
-test('validate too shot name', () => {
-  const _ = new Character('p', 'Bowman', 1, 100, 25, 25);
-  expect(() => (_.validate())).toThrow('Длина имени должна быть от 2 до 10 символов');
+test.each([
+  ['n', 'Ошибка в имени!'],
+  ['long_person', 'Ошибка в имени!'],
+  [123, 'Ошибка в имени!'],
+])('validate name: %p', (personName, error) => {
+  expect(() => (new Character(personName, 'Bowman'))).toThrow(error);
 });
 
 test('levelUp method change values', () => {
   const result = {
     name: 'persona1',
-    type: 'Bowman',
+    type: 'Magician',
     health: 100,
     level: 2,
     attack: 12,
-    defence: 12,
+    defence: 48,
   };
-  const character = new Character('persona1', 'Bowman', 50, 1, 10, 10);
+  const character = new Magician('persona1');
+  character.health = 50;
   character.levelUp();
   expect(character).toEqual(result);
 });
 
 test('levelUp method not for zero health hero', () => {
-  const _ = new Character('p', 'Bowman', 0, 1, 25, 25);
-  expect(() => (_.levelUp())).toThrow('Персонаж уже вне игры!');
+  const character = new Magician('persona1');
+  character.health = 0;
+  expect(() => (character.levelUp())).toThrow('Персонаж уже вне игры!');
 });
 
 test.each([
@@ -68,10 +65,10 @@ test.each([
 });
 
 test.each([
-  [10, 41],
-  [100, 0],
+  [10, 92.5],
+  [200, 0],
 ])('testing damage for points - %i', (points, healthNew) => {
-  const character = new Character('persona1', 'Bowman', 50, 1, 10, 10);
+  const character = new Bowman('persona1');
   character.damage(points);
   expect(character.health).toEqual(healthNew);
 });
@@ -81,11 +78,12 @@ test.each([
   [-1, 'Параметр урона обязателен и должен быть больше нуля!'],
   ['', 'Параметр урона обязателен и должен быть больше нуля!'],
 ])('testing damage for not available points - %i', (points, errorMsg) => {
-  const character = new Character('persona1', 'Bowman', 50, 1, 10, 10);
+  const character = new Character('persona1', 'Bowman');
   expect(() => (character.damage(points))).toThrow(errorMsg);
 });
 
-test('testing damage for points', () => {
-  const character = new Character('persona1', 'Bowman', 0, 1, 10, 10);
+test('testing damage for person with zero health', () => {
+  const character = new Character('persona1', 'Bowman');
+  character.health = 0;
   expect(() => (character.damage(10))).toThrow('Урон персонажу уже не нанести - персонаж уже вне игры!');
 });

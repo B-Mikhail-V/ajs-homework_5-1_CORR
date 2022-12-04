@@ -1,13 +1,18 @@
-import { minLen, maxLen, listPerson } from './limits.js';
-
 export default class Character {
-  constructor(name, type, health, level, attack, defence) {
-    this.name = name;
-    this.type = type;
-    this.health = health;
-    this.level = level || 1;
-    this.attack = attack || 25;
-    this.defence = defence || 10;
+  constructor(name, type) {
+    const types = ['Bowman', 'Swordsman', 'Magician', 'Daemon', 'Undead', 'Zombie'];
+    if (name.length < 2 || name.length > 10 || typeof (name) !== 'string') {
+      throw new Error('Ошибка в имени!');
+    } else {
+      this.name = name;
+    }
+    if (!types.includes(type)) {
+      throw new Error('Ошибка в типе!');
+    } else {
+      this.type = type;
+    }
+    this.health = 100;
+    this.level = 1;
   }
 
   levelUp() {
@@ -25,8 +30,3 @@ export default class Character {
     this.health = healthNew >= 0 ? healthNew : 0;
   }
 }
-
-Character.prototype.validate = function () {
-  if (this.name.length < minLen || this.name.length > maxLen) throw new Error('Длина имени должна быть от 2 до 10 символов');
-  if (!listPerson.includes(this.type)) throw new Error(`Указан несуществующий тип - ${this.type}`);
-};
